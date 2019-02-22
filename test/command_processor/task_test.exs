@@ -85,6 +85,55 @@ defmodule CommandProcessor.TaskTest do
     }
   ]
 
+  @tasks_with_cyclic_dependencies [
+    %Task{
+      name: "task-1",
+      command: "touch /tmp/file1",
+      requires: [
+        "task-3"
+      ]
+    },
+    %Task{
+      name: "task-2",
+      command: "cat /tmp/file1",
+      requires: [
+        "task-1"
+      ]
+    },
+    %Task{
+      name: "task-3",
+      command: "echo 'Hello World!' > /tmp/file1",
+      requires: [
+        "task-2"
+      ]
+    }
+  ]
+
+  @single_task [
+    %Task{
+      name: "task-1",
+      command: "touch /tmp/file1"
+    }
+  ]
+
+  @tasks_with_independent_vertices [
+    %Task{
+      name: "task-1",
+      command: "touch /tmp/file1"
+    },
+    %Task{
+      name: "task-2",
+      command: "cat /tmp/file1"
+    },
+    %Task{
+      name: "task-3",
+      command: "echo 'Hello World!' > /tmp/file1",
+      requires: [
+        "task-2"
+      ]
+    }
+  ]
+
   describe "changeset/2" do
     test "changeset/2 with valid attributes" do
       changeset = Task.changeset(%Task{}, @valid_task_attrs)
@@ -123,6 +172,30 @@ defmodule CommandProcessor.TaskTest do
 
     test "sanitize_tasks/1 produces :error on non-list input" do
       assert Task.sanitize_tasks("notalist") == :error
+    end
+  end
+
+  describe "sort_tasks/1" do
+    test "sort_tasks/1 produces [] for []" do
+      assert Task.sort_tasks([]) == {:ok, []}
+    end
+
+    test "sort_tasks/1 produces the correct order for a single task" do
+      assert Task.sort_tasks(@single_task) == {:ok, ["task-1"]}
+    end
+
+    test "sort_tasks/1 produces the correct order of tasks when the dependencies are acyclic" do
+      assert Task.sort_tasks(@sanitized_valid_tasks) ==
+               {:ok, ["task-1", "task-3", "task-2", "task-4"]}
+    end
+
+    test "sort_tasks/1 produces :error when a cyclic graph occurs" do
+      assert Task.sort_tasks(@tasks_with_cyclic_dependencies) == :error
+    end
+
+    test "sort_tasks/1 produces the correct order of tasks when there are independent tasks" do
+      assert Task.sort_tasks(@tasks_with_independent_vertices) ==
+               {:ok, ["task-2", "task-3", "task-1"]}
     end
   end
 end

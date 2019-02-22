@@ -49,4 +49,41 @@ defmodule CommandProcessor.Task do
     |> CommandProcessor.Task.changeset(task)
     |> Ecto.Changeset.apply_action(:insert)
   end
+
+  @doc """
+  Sort the tasks according to the dependency order.
+
+  This function produces the order of the tasks in terms of their names, e.g. ["task-1", "task-3", "task-2", "task-4"]
+  """
+  def sort_tasks(tasks) do
+    graph =
+      Enum.reduce(tasks, Graph.new(), fn task, g ->
+        # First ensure that every task is added, since some tasks might not have requirements/edges whatsoever.
+        g = Graph.add_vertex(g, task.name)
+
+        if task.requires != nil do
+          add_edges_from_task(g, task)
+        else
+          g
+        end
+      end)
+
+    # If `Graph.topsort(g)` returns false, there is no topological ordering for the graph. Which task to execute first? Most likely the user made an error.
+    sorted = Graph.topsort(graph)
+
+    # This function returns `false` when there is no ordering, though IMO it should really have been :error. Dialyzer complains but there's nothing I can do about it.
+    if sorted == false do
+      :error
+    else
+      {:ok, sorted}
+    end
+  end
+
+  defp add_edges_from_task(g, task) do
+    self = task.name
+
+    Enum.reduce(task.requires, g, fn parent, graph ->
+      Graph.add_edge(graph, parent, self)
+    end)
+  end
 end
