@@ -1,0 +1,18 @@
+{
+  "tasks": [
+    {
+      "name": "task-1",
+      "command": "echo \"$(echo \"upg\")\""
+    },
+    {
+      "name": "task-2",
+      "command": "cd ~/Dropbox",
+      "requires": ["task-1"]
+    },
+    {
+      "name": "task-3",
+      "command": "rm ./*.txt",
+      "requires": ["task-2"]
+    }
+  ]
+}

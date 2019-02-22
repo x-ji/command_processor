@@ -1,0 +1,14 @@
+[
+  {
+    "name": "task-1",
+    "command": "touch /tmp/file1"
+  },
+  {
+    "command": "cat /tmp/file1",
+    "requires": ["task-3"]
+  },
+  {
+    "name": "task-3",
+    "requires": ["task-1"]
+  }
+]

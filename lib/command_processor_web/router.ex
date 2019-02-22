@@ -7,5 +7,6 @@ defmodule CommandProcessorWeb.Router do
 
   scope "/api", CommandProcessorWeb do
     pipe_through :api
+    post "/sort_tasks/:format", TaskController, :receive_tasks
   end
 end
