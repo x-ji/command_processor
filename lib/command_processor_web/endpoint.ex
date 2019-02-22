@@ -40,5 +40,6 @@ defmodule CommandProcessorWeb.Endpoint do
     key: "_command_processor_key",
     signing_salt: "gScU12k/"
 
+  plug CORSPlug
   plug CommandProcessorWeb.Router
 end
