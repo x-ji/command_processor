@@ -85,6 +85,35 @@ defmodule CommandProcessor.TaskTest do
     }
   ]
 
+  @sanitized_valid_tasks_sorted [
+    %Task{
+      name: "task-1",
+      command: "touch /tmp/file1"
+    },
+    %Task{
+      name: "task-3",
+      command: "echo 'Hello World!' > /tmp/file1",
+      requires: [
+        "task-1"
+      ]
+    },
+    %Task{
+      name: "task-2",
+      command: "cat /tmp/file1",
+      requires: [
+        "task-3"
+      ]
+    },
+    %Task{
+      name: "task-4",
+      command: "rm /tmp/file1",
+      requires: [
+        "task-2",
+        "task-3"
+      ]
+    }
+  ]
+
   @tasks_with_cyclic_dependencies [
     %Task{
       name: "task-1",
@@ -131,6 +160,24 @@ defmodule CommandProcessor.TaskTest do
       requires: [
         "task-2"
       ]
+    }
+  ]
+
+  @tasks_with_independent_vertices_sorted [
+    %Task{
+      name: "task-2",
+      command: "cat /tmp/file1"
+    },
+    %Task{
+      name: "task-3",
+      command: "echo 'Hello World!' > /tmp/file1",
+      requires: [
+        "task-2"
+      ]
+    },
+    %Task{
+      name: "task-1",
+      command: "touch /tmp/file1"
     }
   ]
 
@@ -181,12 +228,12 @@ defmodule CommandProcessor.TaskTest do
     end
 
     test "sort_tasks/1 produces the correct order for a single task" do
-      assert Task.sort_tasks(@single_task) == {:ok, ["task-1"]}
+      assert Task.sort_tasks(@single_task) == {:ok, @single_task}
     end
 
     test "sort_tasks/1 produces the correct order of tasks when the dependencies are acyclic" do
       assert Task.sort_tasks(@sanitized_valid_tasks) ==
-               {:ok, ["task-1", "task-3", "task-2", "task-4"]}
+               {:ok, @sanitized_valid_tasks_sorted}
     end
 
     test "sort_tasks/1 produces :error when a cyclic graph occurs" do
@@ -195,7 +242,7 @@ defmodule CommandProcessor.TaskTest do
 
     test "sort_tasks/1 produces the correct order of tasks when there are independent tasks" do
       assert Task.sort_tasks(@tasks_with_independent_vertices) ==
-               {:ok, ["task-2", "task-3", "task-1"]}
+               {:ok, @tasks_with_independent_vertices_sorted}
     end
   end
 end

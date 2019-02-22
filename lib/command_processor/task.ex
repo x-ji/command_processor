@@ -51,11 +51,32 @@ defmodule CommandProcessor.Task do
   end
 
   @doc """
-  Sort the tasks according to the dependency order.
-
-  This function produces the order of the tasks in terms of their names, e.g. ["task-1", "task-3", "task-2", "task-4"]
+  Sort the tasks according to the dependency/requirement order.
   """
   def sort_tasks(tasks) do
+    case produce_task_order(tasks) do
+      :error ->
+        :error
+
+      {:ok, order} ->
+        tasks_with_names =
+          Enum.reduce(tasks, %{}, fn task, acc ->
+            Map.put(acc, task.name, task)
+          end)
+
+        sorted_tasks =
+          Enum.map(order, fn name ->
+            tasks_with_names[name]
+          end)
+
+        {:ok, sorted_tasks}
+    end
+  end
+
+  @doc """
+  Produces the order of the tasks in terms of their names, e.g. ["task-1", "task-3", "task-2", "task-4"]
+  """
+  defp produce_task_order(tasks) do
     graph =
       Enum.reduce(tasks, Graph.new(), fn task, g ->
         # First ensure that every task is added, since some tasks might not have requirements/edges whatsoever.
