@@ -16,7 +16,7 @@ This app was tested on Arch Linux with Elixir 1.8.0, Phoenix 1.4.0
 
 ## Installation, Configuration and Usage Instructions
 
-To run the app:
+To run the app under `:dev` environment:
 
 1. Clone the repo
 2. `mix deps.get`
@@ -25,7 +25,7 @@ To run the app:
 
 Use `mix test` to run the tests.
 
-To get the output as JSON, perform a HTTP POST request to the endpoint, e.g. `http://localhost:4000/api/sort_tasks/json`:
+To get the output as JSON, perform a HTTP POST request to the endpoint `/api/sort_tasks/json`, e.g.:
 
 ```
 $ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json http://localhost:4000/api/sort_tasks/json
@@ -33,12 +33,11 @@ $ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json ht
   [{"command":"touch /tmp/file1","name":"task-1"},{"command":"echo 'Hello World!' > /tmp/file1","name":"task-3"},{"command":"cat /tmp/file1","name":"task-2"},{"command":"rm /tmp/file1","name":"task-4"}]
 ```
 
-To get the output as a bash script, perform a HTTP POST request to the endpoint, e.g. `http://localhost:4000/api/sort_tasks/script`:
+To get the output as a bash script, perform a HTTP POST request to the endpoint `/api/sort_tasks/script`, e.g.:
 
 ```
-$ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json
+$ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json http://localhost:4000/api/sort_tasks/script | bash
 
-  http://localhost:4000/api/sort_tasks/script | bash
     % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                   Dload  Upload   Total   Spent    Left  Speed
   100   500  100   100  100   400  11111  44444 --:--:-- --:--:-- --:--:-- 55555
@@ -61,7 +60,7 @@ The main functionalities of the app are in the two modules: `CommandProcessor.Ta
 - The `CommandProcessor.TaskController` module is responsible for interfacing with the outside request.
   - It accepts the JSON input and ask `CommandProcessor.Task` module to process it.
     - If any error occurred, it will return a `400` status code.
-    - If the output is successfully produced, it will return encode and return the output in the appropriate format.
+    - If the output is successfully produced, it will encode and return the output in the appropriate format.
 
 ## Discussion
 
