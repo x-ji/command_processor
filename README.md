@@ -78,8 +78,8 @@ The main functionalities of the app are in the two modules: `CommandProcessor.Ta
 
 - The task description also mentions "deployment strategy" though I haven't had time to focus on that. I just added distillery as a dependency and I was able to produce and run releases successfully. Improvements would include further containerizing the app for Docker and Kubernetes.
 
-- After I started, I realized that `Task` might not be a very good name for module names since there is also a built-in `Task` module already. Apparently our module is prefixed by `CommandProcessor.` though it might still be better to use a different name.
+- After I started, I realized that `Task` might not be a very good module name since there is also a built-in `Task` module already. Our module is prefixed by `CommandProcessor.`, but it might still have been better to use a different name.
+
+- Normally in Phoenix, most functions would live in a context module instead of the `CommandProcessor.Task` module itself. That also makes the code more modular and clearer. It's just that in this task there is only one data type to deal with, so I just put all the functions within the same module.
 
 - There could always be more edge cases for incoming data and especially for command line commands. I covered some error cases with my tests, though in a production app one might want to add even more tests. Property-based testing might also help.
-
-- Normally in Phoenix, most functions would live in a context module instead of the `CommandProcessor.Task` module itself. That also makes the code more modular and clearer. It's just that in this task there is only one data type to deal with so I just put all the functions within the same module.
