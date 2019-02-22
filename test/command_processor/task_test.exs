@@ -56,6 +56,20 @@ defmodule CommandProcessor.TaskTest do
     }
   ]
 
+  @duplicate_tasks [
+    %{
+      "name" => "task-1",
+      "command" => "touch /tmp/file1"
+    },
+    %{
+      "name" => "task-1",
+      "command" => "cat /tmp/file1",
+      "requires" => [
+        "task-1"
+      ]
+    }
+  ]
+
   @sanitized_valid_tasks [
     %Task{
       name: "task-1",
@@ -243,6 +257,10 @@ defmodule CommandProcessor.TaskTest do
 
     test "sanitize_tasks/1 produces :error on a list which contains invalid tasks" do
       assert Task.sanitize_tasks(@invalid_tasks) == :error
+    end
+
+    test "sanitize_tasks/1 produces :error on a list which contains duplicate names" do
+      assert Task.sanitize_tasks(@duplicate_tasks) == :error
     end
 
     test "sanitize_tasks/1 produces :error on non-list input" do

@@ -22,15 +22,28 @@ defmodule CommandProcessor.Task do
       tasks
       |> Enum.map(&sanitize_task(&1))
 
-    all_valid =
-      Enum.reduce_while(tasks, true, fn t, acc ->
-        case t do
-          {:error, _} -> {:halt, false}
-          _ -> {:cont, acc}
+    # We check for two things here:
+    # First is whether there is any error discovered by Ecto.Changeset
+    # Second is whether the name of the task is repeated within the input list, in which case the list is probably ill-defined (which task should we exactly execute?)
+    # This can also be written in two separate functions, though that would probably require two passes over the tasks, which could be less efficient.
+    valid_tasks =
+      Enum.reduce_while(tasks, {true, MapSet.new()}, fn result, {valid, set_of_names} ->
+        case result do
+          {:error, _} ->
+            {:halt, {false, set_of_names}}
+
+          {:ok, task} ->
+            case MapSet.member?(set_of_names, task.name) do
+              true -> {:halt, {false, set_of_names}}
+              false -> {:cont, {valid, MapSet.put(set_of_names, task.name)}}
+            end
         end
       end)
 
-    if all_valid do
+    # The first element is the bool. The second element is the accumulator.
+    valid_tasks = Kernel.elem(valid_tasks, 0)
+
+    if valid_tasks do
       # Get each task out of the {:ok, task} tuple.
       {:ok, Enum.map(tasks, fn {:ok, task} -> task end)}
     else
