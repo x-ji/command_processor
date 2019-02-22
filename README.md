@@ -76,6 +76,8 @@ The main functionalities of the app are in the two modules: `CommandProcessor.Ta
 
 - Phoenix might be a bit overblown for an API project and [Maru](https://github.com/elixir-maru/maru) could be an interesting alternative, or even just create a plain Mix project. It's just that I'm still most familiar with Phoenix's default routing structure.
 
+- If the requirement for output format gets more complicated, it might make sense to extract the functions for generating the JSON output and the bash script into their own `TaskView` module.
+
 - The task description also mentions "deployment strategy" though I haven't had time to focus on that. I just added distillery as a dependency and I was able to produce and run releases successfully. Improvements would include further containerizing the app for Docker and Kubernetes.
 
 - After I started, I realized that `Task` might not be a very good module name since there is also a built-in `Task` module already. Our module is prefixed by `CommandProcessor.`, but it might still have been better to use a different name.
