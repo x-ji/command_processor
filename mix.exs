@@ -39,7 +39,8 @@ defmodule CommandProcessor.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:ecto, "~> 3.0"},
       {:libgraph, "~> 0.13.3"},
-      {:cors_plug, "~> 2.0"}
+      {:cors_plug, "~> 2.0"},
+      {:distillery, "~> 2.0"}
     ]
   end
 end
