@@ -25,7 +25,7 @@ To run the app:
 
 Use `mix test` to run the tests.
 
-To get the output as JSON, perform a HTTP POST request to the endpoint `http://localhost:4000/api/sort_tasks/json`. For example:
+To get the output as JSON, perform a HTTP POST request to the endpoint, e.g. `http://localhost:4000/api/sort_tasks/json`:
 
 ```
 $ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json http://localhost:4000/api/sort_tasks/json
@@ -33,7 +33,7 @@ $ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json ht
   [{"command":"touch /tmp/file1","name":"task-1"},{"command":"echo 'Hello World!' > /tmp/file1","name":"task-3"},{"command":"cat /tmp/file1","name":"task-2"},{"command":"rm /tmp/file1","name":"task-4"}]
 ```
 
-To get the output as a bash script, perform a HTTP POST request to the endpoint `http://localhost:4000/api/sort_tasks/script`. For example:
+To get the output as a bash script, perform a HTTP POST request to the endpoint, e.g. `http://localhost:4000/api/sort_tasks/script`:
 
 ```
 $ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json
@@ -44,8 +44,6 @@ $ curl -H "Content-Type: application/json" -d @test/fixtures/valid_tasks.json
   100   500  100   100  100   400  11111  44444 --:--:-- --:--:-- --:--:-- 55555
   Hello World!
 ```
-
-Note that one would need to pass in the flag `-H "Content-Type: application/json"` if using `curl`.
 
 The two endpoints accept the same type of input. They only differ by their output formats.
 
@@ -78,6 +76,8 @@ The main functionalities of the app are in the two modules: `CommandProcessor.Ta
 ## Potential Improvements
 
 - Phoenix might be a bit overblown for an API project and [Maru](https://github.com/elixir-maru/maru) could be an interesting alternative, or even just create a plain Mix project. It's just that I'm still most familiar with Phoenix's default routing structure.
+
+- The task description also mentions "deployment strategy" though I haven't had time to focus on that. I just added distillery as a dependency and I was able to produce and run releases successfully. Improvements would include further containerizing the app for Docker and Kubernetes.
 
 - After I started, I realized that `Task` might not be a very good name for module names since there is also a built-in `Task` module already. Apparently our module is prefixed by `CommandProcessor.` though it might still be better to use a different name.
 
