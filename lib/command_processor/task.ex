@@ -107,4 +107,18 @@ defmodule CommandProcessor.Task do
       Graph.add_edge(graph, parent, self)
     end)
   end
+
+  def prepare_json_output(sorted_tasks) do
+    sorted_tasks
+    |> Enum.map(fn task_struct ->
+      %{"name" => task_struct.name, "command" => task_struct.command}
+    end)
+  end
+
+  def prepare_script_output(sorted_tasks) do
+    sorted_tasks
+    |> Enum.reduce("#!/usr/bin/env bash\n\n", fn task, acc ->
+      acc <> task.command <> "\n"
+    end)
+  end
 end

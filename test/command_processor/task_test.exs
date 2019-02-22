@@ -181,6 +181,34 @@ defmodule CommandProcessor.TaskTest do
     }
   ]
 
+  @valid_tasks_for_json_output [
+    %{
+      "name" => "task-1",
+      "command" => "touch /tmp/file1"
+    },
+    %{
+      "name" => "task-3",
+      "command" => "echo 'Hello World!' > /tmp/file1"
+    },
+    %{
+      "name" => "task-2",
+      "command" => "cat /tmp/file1"
+    },
+    %{
+      "name" => "task-4",
+      "command" => "rm /tmp/file1"
+    }
+  ]
+
+  @valid_tasks_for_script_output """
+  #!/usr/bin/env bash
+
+  touch /tmp/file1
+  echo 'Hello World!' > /tmp/file1
+  cat /tmp/file1
+  rm /tmp/file1
+  """
+
   describe "changeset/2" do
     test "changeset/2 with valid attributes" do
       changeset = Task.changeset(%Task{}, @valid_task_attrs)
@@ -243,6 +271,20 @@ defmodule CommandProcessor.TaskTest do
     test "sort_tasks/1 produces the correct order of tasks when there are independent tasks" do
       assert Task.sort_tasks(@tasks_with_independent_vertices) ==
                {:ok, @tasks_with_independent_vertices_sorted}
+    end
+  end
+
+  describe "prepare_json_output/1" do
+    test "prepare_json_output/1 correctly produces the output from valid input" do
+      assert Task.prepare_json_output(@sanitized_valid_tasks_sorted) ==
+               @valid_tasks_for_json_output
+    end
+  end
+
+  describe "prepare_script_output/1" do
+    test "prepare_script_output/1 correctly produces the output from valid input" do
+      assert Task.prepare_script_output(@sanitized_valid_tasks_sorted) ==
+               @valid_tasks_for_script_output
     end
   end
 end
